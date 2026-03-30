@@ -1,9 +1,13 @@
+from messages import Messages
+from book import Book
+
+
 class LibrarySystem:
     def __init__(self):
-        self.__books_catalog = []
+        self.__catalog_books = []
         self.__books_counter = 0
 
-    def add_book_to_catalog(self, book_title, book_author, publication_year):
+    def add_book_to_catalog(self, book_title: str, book_author: str, publication_year: str):
         self.__books_counter += 1
         book_id = f"{self.__books_counter:04d}"
 
@@ -16,47 +20,47 @@ class LibrarySystem:
             "current_holder": None
         }
 
-        self.__books_catalog.append(new_book)
-        print(f"Книга добавлена! ID: {book_id}")
+        self.__catalog_books.append(new_book)
+        print(Messages.BOOK_ADDED.format(book_id))
         return book_id
 
-    def find_book(self, book_identifier):
-        for book in self.__books_catalog:
-            if book["book_id"] == book_identifier or book["title"].lower() == book_identifier.lower():
+    def find_book(self, book_id_or_title_search: str):
+        for book in self.__catalog_books:
+            if book["book_id"] == book_id_or_title_search or book["title"].lower() == book_id_or_title_search.lower():
                 return book
         return None
 
-    def loan_book(self, book_identifier):
+    def loan_book(self, book_identifier: str):
         book = self.find_book(book_identifier)
-        library_role = "Читатель"
+        library_reader_role = "Читатель"
 
         if not book:
-            print("Ошибка! Книга не найдена.")
+            print(Messages.BOOK_NOT_FOUND)
             return False
 
         if not book["is_available"]:
-            print(f"Книга '{book['title']}' уже выдана.")
+            print(Messages.BOOK_ALREADY_LOANED.format(book["title"]))
             return False
 
         book["is_available"] = False
-        book["current_holder"] = library_role.lower()
-        print(f"Книга '{book['title']}' выдана на руки!")
+        book["current_holder"] = library_reader_role.lower()
+        print(Messages.BOOK_LOANED.format(book["title"]))
         return True
 
-    def return_book(self, book_identifier):
+    def return_book(self, book_identifier: str):
         book = self.find_book(book_identifier)
 
         if not book:
-            print("Ошибка! Книга не найдена.")
+            print(Messages.BOOK_NOT_FOUND)
             return False
 
         if book["is_available"]:
-            print(f"Книга '{book['title']}' и так в библиотеке.")
+            print(Messages.BOOK_ALREADY_AVAILABLE.format(book["title"]))
             return False
 
         book["is_available"] = True
         book["current_holder"] = None
-        print(f"Книга '{book['title']}' возвращена!")
+        print(Messages.BOOK_RETURNED.format(book["title"]))
         return True
 
     def start_library_system(self):
@@ -70,7 +74,6 @@ class LibrarySystem:
         third_menu_point = "3"
         fourth_menu_point = "4"
 
-
         while True:
             print("\nМЕНЮ:")
             print(f"{first_menu_point}. {book_add}")
@@ -78,31 +81,32 @@ class LibrarySystem:
             print(f"{third_menu_point}. {book_return}")
             print(f"{fourth_menu_point}. {menu_enter}")
 
-            choice = input(f"Выберите действие ({first_menu_point}-{fourth_menu_point}): ").strip()
+            library_reader_choice = input(f"Выберите действие ({first_menu_point}-{fourth_menu_point}): ").strip()
 
-            if choice == first_menu_point:
-                title = input("Название книги: ")
-                author = input("Автор: ")
-                current_year = 2026
+            if library_reader_choice == first_menu_point:
+                book_title = input("Название книги: ")
+                book_author = input("Автор: ")
 
-                year_input = input("Год издания: ")
-                try:
-                    year = int(year_input)
-                except ValueError:
-                    year = current_year
+                published_book_year = None
+                while published_book_year is None:
+                    book_year_input = input("Год издания: ")
+                    if book_year_input.isdigit():
+                        published_book_year = int(book_year_input)
+                    else:
+                        print("Ошибка! Год издания должен быть числом. Попробуйте снова.")
 
-                self.add_book_to_catalog(title, author, year)
+                self.add_book_to_catalog(book_title, book_author, published_book_year)
 
-            elif choice == second_menu_point:
+            elif library_reader_choice == second_menu_point:
                 book_id = input("ID книги или название: ")
                 self.loan_book(book_id)
 
-            elif choice == third_menu_point:
+            elif library_reader_choice == third_menu_point:
                 book_id = input("ID книги или название: ")
                 self.return_book(book_id)
 
-            elif choice == fourth_menu_point:
+            elif library_reader_choice == fourth_menu_point:
                 print("До свидания!")
-                break
+                return
             else:
                 print("Неверный выбор. Попробуйте снова.")
