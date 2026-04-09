@@ -2,12 +2,12 @@ from messages import Messages
 from book import Book
 
 
-class LibrarySystem:
+class Library:
     def __init__(self):
         self.__catalog_books = []
         self.__books_counter = 0
 
-    def add_book_to_catalog(self, book_title: str, book_author: str, publication_year: str):
+    def add_book_to_catalog(self, book_title: str, book_author: str, book_publication_year: str):
         self.__books_counter += 1
         book_id = f"{self.__books_counter:04d}"
 
@@ -15,7 +15,7 @@ class LibrarySystem:
             "book_id": book_id,
             "title": book_title.strip(),
             "author": book_author.strip(),
-            "year": publication_year,
+            "year": book_publication_year,
             "is_available": True,
             "current_holder": None
         }
@@ -24,11 +24,23 @@ class LibrarySystem:
         print(Messages.BOOK_ADDED.format(book_id))
         return book_id
 
-    def find_book(self, book_id_or_title_search: str):
+    def find_book_by_id(self, book_id: str):
         for book in self.__catalog_books:
-            if book["book_id"] == book_id_or_title_search or book["title"].lower() == book_id_or_title_search.lower():
+            if book["book_id"] == book_id:
                 return book
         return None
+
+    def find_book_by_title(self, title: str):
+        for book in self.__catalog_books:
+            if book["title"].lower() == title.lower():
+                return book
+        return None
+
+    def find_book(self, search_query: str):
+        book = self.find_book_by_id(search_query)
+        if book:
+            return book
+        return self.find_book_by_title(search_query)
 
     def loan_book(self, book_identifier: str):
         book = self.find_book(book_identifier)
@@ -74,7 +86,9 @@ class LibrarySystem:
         third_menu_point = "3"
         fourth_menu_point = "4"
 
-        while True:
+        library_reader_choice = None
+
+        while library_reader_choice != fourth_menu_point:
             print("\nМЕНЮ:")
             print(f"{first_menu_point}. {book_add}")
             print(f"{second_menu_point}. {book_loan}")
@@ -107,6 +121,5 @@ class LibrarySystem:
 
             elif library_reader_choice == fourth_menu_point:
                 print("До свидания!")
-                return
             else:
                 print("Неверный выбор. Попробуйте снова.")
