@@ -75,7 +75,7 @@ class Library:
         print(Messages.BOOK_RETURNED.format(book["title"]))
         return True
 
-    def start_library_system(self):
+    def start_library(self):
         print("\nСИСТЕМА УПРАВЛЕНИЯ БИБЛИОТЕКОЙ")
         book_add = "Добавить книгу"
         book_loan = "Выдать книгу"
