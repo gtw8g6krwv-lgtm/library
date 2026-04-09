@@ -1,5 +1,5 @@
-from library_system import LibrarySystem
+from library_system import Library
 
 if __name__ == "__main__":
-    library = LibrarySystem()
-    library.start_library_system()
+    library = Library()
+    library.start_library()
